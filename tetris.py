@@ -33,6 +33,13 @@ PREVIEW = "//" #Alternatives: "[]", "▒▒"
 
 TOP_BOUNDS = 4 # represents # of lines above where the piece spawns
 
+CLEAR_CMD = "cls" if (os.name == 'nt') else "clear" 
+
+
+
+def resize_window() -> None:
+    if (os.name == 'nt'):
+        os.system('mode con: cols=45 lines=30 ')
 
 
 def generate_piece_set() -> list:
@@ -99,12 +106,11 @@ class Menu(Process):
     
     def run(self):
         self.controller.start()
-        os.system('mode con: cols=45 lines=30 ')
+        resize_window()
         self._render()
         while self.running:
             if os.get_terminal_size().columns != 45 or os.get_terminal_size().lines != 30:
-                pass
-                os.system('mode con: cols=45 lines=30 ')
+                resize_window()
             time.sleep(.5)
 
     def stop(self):
@@ -153,7 +159,7 @@ class Menu(Process):
             final += f"{' '*15}{self.cursor if self.cursor_position == 2 else ''}  Exit\n"
             final += '\n'*9
             final += "       Use keyboard to navigate menu"
-            os.system("cls")
+            os.system(CLEAR_CMD)
             sys.stdout.write(final)
             self.buffering = False
 
@@ -167,9 +173,9 @@ class About(Process):
         )
 
     def run(self):
-        os.system('mode con: cols=45 lines=30 ')
+        resize_window()
         self.controller.start()
-        os.system("cls")
+        os.system(CLEAR_CMD)
         print("""
 THIS IS A REPRODUCTION OF THE GAME TETRIS,
  IMPLEMENTED IN PYTHON. IT IS CREATED FOR 
@@ -191,8 +197,7 @@ Controls:
 """)
         while self.running:
             if os.get_terminal_size().columns != 45 or os.get_terminal_size().lines != 30:
-                pass
-                os.system('mode con: cols=45 lines=30 ')
+                resize_window()
             time.sleep(.6)
 
     def stop(self):
@@ -274,7 +279,7 @@ class GameRunner(Process):
 
     def run(self):
         self.controller.start()
-        os.system('mode con: cols=45 lines=30 ')
+        resize_window()
         while self.running:
             if not self.buffering and not self.piece_drop_counter and not self.stopped:
                 pass
@@ -285,8 +290,7 @@ class GameRunner(Process):
             self._render()
 
             if os.get_terminal_size().columns != 45 or os.get_terminal_size().lines != 30:
-                pass
-                os.system('mode con: cols=45 lines=30 ')
+                resize_window()
             time.sleep(.6) # .6 is a good starting speed
 
     def stop(self):
@@ -561,7 +565,7 @@ class GameRunner(Process):
         if not self.buffering:
             self.buffering = True
     
-            os.system("cls")
+            os.system(CLEAR_CMD)
             self._draw_to_board()
     
             hold = [[SPACER for j in range(4)] for i in range(4)]
@@ -666,12 +670,12 @@ class GameOver(Process):
 
     def run(self):
         self.controller.start()
-        os.system('mode con: cols=45 lines=30 ')
+        resize_window()
         self._render()
         while self.running:
             if os.get_terminal_size().columns != 45 or os.get_terminal_size().lines != 30:
                 pass
-                os.system('mode con: cols=45 lines=30 ')
+                resize_window()
             time.sleep(.5) # .6 is a good starting speed
             
     def _check_key_press(self, key):
@@ -705,7 +709,7 @@ class GameOver(Process):
         if not self.buffering:
             final = ""
             self.buffering = True
-            os.system("cls")
+            os.system(CLEAR_CMD)
             final += '\n'*5
             final +=  "                Game Over\n"
             final += f"            Your score was: {self.score}\n\n"
